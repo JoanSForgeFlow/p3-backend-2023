@@ -1,0 +1,17 @@
+version: '3'
+services:
+  Restaurantsdb:
+    image: postgres
+    container_name: restaurantsdb
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=restaurantsdb
+    ports:
+      - 5432:5432
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+volumes:
+  dbdata:
