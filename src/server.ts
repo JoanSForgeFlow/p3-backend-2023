@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import restaurantsRouter from "./restaurants.js";
+import restaurantsRouter from "./restaurants.ts";
 
 dotenv.config();
 
