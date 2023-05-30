@@ -12,4 +12,25 @@ router.post(
   })
 );
 
+router.get(
+  "/",
+  errorChecked(async (req, res) => {
+    const restaurants = await prisma.restaurant.findMany();
+    res.status(200).json({ restaurants });
+  })
+);
+
+router.get(
+  "/:id",
+  errorChecked(async (req, res) => {
+    const id = Number(req.params.id);
+    const restaurant = await prisma.restaurant.findUnique({ where: { id } });
+    if (!restaurant) {
+      res.status(404).json({ message: 'Restaurant not found' });
+    } else {
+      res.status(200).json({ restaurant });
+    }
+  })
+);
+
 export default router;
