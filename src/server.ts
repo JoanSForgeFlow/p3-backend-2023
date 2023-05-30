@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import restaurantsRouter from "./restaurants.js";
+import tablesRouter from "./tables.js";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.use("/restaurants", restaurantsRouter);
+app.use("/tables", tablesRouter);
 
 const { SERVER_PORT } = process.env;
 app.listen(SERVER_PORT, () => {

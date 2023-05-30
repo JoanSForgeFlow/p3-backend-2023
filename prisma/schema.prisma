@@ -15,4 +15,13 @@ model Restaurant {
   name     String
   location String
   cuisine  String
+  tables   Table[]
+}
+
+model Table {
+  id           Int         @id @default(autoincrement())
+  restaurantId Int
+  number       Int
+  capacity     Int
+  Restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
 }
