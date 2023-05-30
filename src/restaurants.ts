@@ -33,4 +33,27 @@ router.get(
   })
 );
 
+router.put(
+  "/:id",
+  errorChecked(async (req, res) => {
+    console.log('Request body:', req.body);
+    const id = Number(req.params.id);
+    const updatedRestaurant = await prisma.restaurant.update({
+      where: { id },
+      data: req.body,
+    });
+    console.log('Updated restaurant:', updatedRestaurant);
+    res.status(200).json({ updatedRestaurant });
+  })
+);
+
+router.delete(
+  "/:id",
+  errorChecked(async (req, res) => {
+    const id = Number(req.params.id);
+    const deletedRestaurant = await prisma.restaurant.delete({ where: { id } });
+    res.status(200).json({ deletedRestaurant });
+  })
+);
+
 export default router;
