@@ -1,6 +1,6 @@
 import { Request, Router } from "express";
 import prisma from "./prisma-client.js";
-import { errorChecked } from "./utils.js";
+import { errorChecked, NotFoundError } from "./utils.js";
 
 const router = Router();
 
@@ -26,7 +26,7 @@ router.get(
     const id = Number(req.params.id);
     const restaurant = await prisma.restaurant.findUnique({ where: { id } });
     if (!restaurant) {
-      res.status(404).json({ message: 'Restaurant not found' });
+      throw new NotFoundError('Restaurant', id);
     } else {
       res.status(200).json({ restaurant });
     }

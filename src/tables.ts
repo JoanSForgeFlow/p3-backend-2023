@@ -1,6 +1,6 @@
 import { Request, Router } from "express";
 import prisma from "./prisma-client.js";
-import { errorChecked } from "./utils.js";
+import { errorChecked, NotFoundError } from "./utils.js";
 
 const router = Router();
 
@@ -19,6 +19,9 @@ router.get(
     const table = await prisma.table.findUnique({
       where: { id },
     });
+    if (!table) {
+      throw new NotFoundError("Table", id);
+    }
     res.status(200).json({ table });
   })
 );
@@ -27,6 +30,10 @@ router.get(
   "/restaurants/:id",
   errorChecked(async (req, res) => {
     const restaurantId = Number(req.params.id);
+    const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
+    if (!restaurant) {
+      throw new NotFoundError("Restaurant", restaurantId);
+    }
     const tables = await prisma.table.findMany({
       where: { restaurantId },
     });

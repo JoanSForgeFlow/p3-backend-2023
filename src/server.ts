@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import restaurantsRouter from "./restaurants.js";
 import tablesRouter from "./tables.js";
 import customersRouter from "./customers.js";
+import { defaultErrorHandler } from './utils.js';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(morgan("dev"));
 app.use("/restaurants", restaurantsRouter);
 app.use("/tables", tablesRouter);
 app.use("/customers", customersRouter);
+app.use(defaultErrorHandler);
 
 const { SERVER_PORT } = process.env;
 app.listen(SERVER_PORT, () => {

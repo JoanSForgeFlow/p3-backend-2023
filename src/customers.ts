@@ -13,17 +13,17 @@ router.get(
 );
 
 router.get(
-    "/:id",
-    errorChecked(async (req, res) => {
-      const id = Number(req.params.id);
-      const customer = await prisma.customer.findUnique({
-        where: { id },
-      });
-      if (!customer) {
-        throw new NotFoundError("Customer", id);
-      }
-      res.status(200).json({ customer });
-    })
-  );
+  "/:id",
+  errorChecked(async (req, res) => {
+    const id = Number(req.params.id);
+    const customer = await prisma.customer.findUnique({
+      where: { id },
+    });
+    if (!customer) {
+      throw new NotFoundError("Customer", id);
+    }
+    res.status(200).json({ customer });
+  })
+);
 
 export default router;
