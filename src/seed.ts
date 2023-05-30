@@ -2,6 +2,12 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+
+await prisma.customer.deleteMany();
+await prisma.table.deleteMany();
+await prisma.restaurant.deleteMany();
+await prisma.booking.deleteMany();
+
 const r1 = await prisma.restaurant.create({
   data: { 
     name: "Restaurant 1", 
@@ -56,6 +62,30 @@ const c2 = await prisma.customer.create({
   },
 });
 console.log(`Created customer ${c2.name} (${c2.id})`);
+
+const b1 = await prisma.booking.create({
+  data: {
+    customerId: c1.id,
+    tableId: t1.id,
+    restaurantId: r1.id,
+    bookingDate: new Date(),
+    bookingTime: "19:00",
+    numberOfPeople: 2,
+  },
+});
+console.log(`Created booking for customer ${c1.name} (${c1.id}) at restaurant ${r1.name} (${r1.id})`);
+
+const b2 = await prisma.booking.create({
+  data: {
+    customerId: c2.id,
+    tableId: t2.id,
+    restaurantId: r2.id,
+    bookingDate: new Date(),
+    bookingTime: "20:00",
+    numberOfPeople: 4,
+  },
+});
+console.log(`Created booking for customer ${c2.name} (${c2.id}) at restaurant ${r2.name} (${r2.id})`);
 }
 
 main()
