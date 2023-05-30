@@ -41,8 +41,8 @@ model Booking {
   customerId     Int
   tableId        Int
   restaurantId   Int
-  bookingDate    DateTime
-  bookingTime    String
+  bookingDate     DateTime
+  bookingEndTime  DateTime
   numberOfPeople Int
   customer       Customer   @relation(fields: [customerId], references: [id])
   table          Table      @relation(fields: [tableId], references: [id])

@@ -1,6 +1,7 @@
 import { Request, Router } from "express";
 import prisma from "./prisma-client.js";
 import { errorChecked, NotFoundError } from "./utils.js";
+import moment from 'moment';
 
 const router = Router();
 
@@ -30,19 +31,62 @@ router.post(
   "/",
   errorChecked(async (req, res) => {
     const { customerId, tableId, restaurantId, bookingDate, bookingTime, numberOfPeople } = req.body;
+    if (numberOfPeople <= 0) {
+      res.status(400).json({ error: "Invalid number of people" });
+      return;
+    }
     const customer = await prisma.customer.findUnique({ where: { id: customerId } });
     const table = await prisma.table.findUnique({ where: { id: tableId } });
     const restaurant = await prisma.restaurant.findUnique({ where: { id: restaurantId } });
     if (!customer) {
-      res.status(400).json({ error: "Customer not found" });
-      return;
+      throw new NotFoundError("Customer", customerId);
     }
     if (!table) {
-      res.status(400).json({ error: "Table not found" });
-      return;
+      throw new NotFoundError("Table", tableId);
     }
     if (!restaurant) {
-      res.status(400).json({ error: "Restaurant not found" });
+      throw new NotFoundError("Restaurant", restaurantId);
+    }
+    if (numberOfPeople > table.capacity) {
+      res.status(400).json({ error: "Number of people exceeds table capacity" });
+      return;
+    }
+    const bookingDateTime = moment.utc(bookingDate);
+    const bookingEndDateTime = moment.utc(bookingDateTime).add(1, 'hours').add(59, 'minutes');
+    const existingBooking = await prisma.booking.findFirst({
+      where: {
+        tableId,
+        OR: [
+          {
+            AND: [
+              {
+                bookingDate: {
+                  lte: bookingDateTime.toDate(),
+                },
+                bookingEndTime: {
+                  gte: bookingDateTime.toDate(),
+                },
+              },
+            ],
+          },
+          {
+            AND: [
+              {
+                bookingDate: {
+                  lte: bookingEndDateTime.toDate(),
+                },
+                bookingEndTime: {
+                  gte: bookingEndDateTime.toDate(),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (existingBooking) {
+      res.status(400).json({ error: "Table is already booked for the given date and time" });
       return;
     }
     const newBooking = await prisma.booking.create({
@@ -50,14 +94,16 @@ router.post(
         customerId,
         tableId,
         restaurantId,
-        bookingDate,
-        bookingTime,
+        bookingDate: bookingDateTime.toDate(),
+        bookingEndTime: bookingEndDateTime.toDate(),
         numberOfPeople,
       },
     });
+
     res.status(201).json({ booking: newBooking });
   })
 );
+
 
 router.get(
   "/restaurants/:id",
