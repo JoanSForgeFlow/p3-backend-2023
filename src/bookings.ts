@@ -137,4 +137,77 @@ router.get(
   })
 );
 
+router.put(
+  "/:id",
+  errorChecked(async (req, res) => {
+    const id = Number(req.params.id);
+    const { bookingDate } = req.body;
+    const existingBooking = await prisma.booking.findUnique({ where: { id } });
+    if (!existingBooking) {
+      throw new NotFoundError("Booking", id);
+    }
+    const bookingDateTime = moment.utc(bookingDate);
+    const bookingEndDateTime = moment.utc(bookingDateTime).add(1, 'hours').add(59, 'minutes');
+    const conflictingBooking = await prisma.booking.findFirst({
+      where: {
+        tableId: existingBooking.tableId,
+        AND: {
+          NOT: { id: id },
+        },
+        OR: [
+          {
+            AND: [
+              {
+                bookingDate: {
+                  lte: bookingDateTime.toDate(),
+                },
+                bookingEndTime: {
+                  gte: bookingDateTime.toDate(),
+                },
+              },
+            ],
+          },
+          {
+            AND: [
+              {
+                bookingDate: {
+                  lte: bookingEndDateTime.toDate(),
+                },
+                bookingEndTime: {
+                  gte: bookingEndDateTime.toDate(),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+    if (conflictingBooking) {
+      res.status(400).json({ error: "The table is already booked for the selected date and time" });
+      return;
+    }
+    const updatedBooking = await prisma.booking.update({
+      where: { id },
+      data: {
+        bookingDate: bookingDateTime.toDate(),
+        bookingEndTime: bookingEndDateTime.toDate(),
+      },
+    });
+    res.status(200).json({ booking: updatedBooking });
+  })
+);
+
+router.delete(
+  "/:id",
+  errorChecked(async (req, res) => {
+    const id = Number(req.params.id);
+    const booking = await prisma.booking.findUnique({ where: { id } });
+    if (!booking) {
+      throw new NotFoundError("Booking", id);
+    }
+    await prisma.booking.delete({ where: { id } });
+    res.status(200).json({ message: "Booking successfully deleted" });
+  })
+);
+
 export default router;
