@@ -32,4 +32,3 @@ export class NotFoundError extends Error {
     super(`The record with ID ${id} of the model ${model} does not exist.`);
   }
 }
-

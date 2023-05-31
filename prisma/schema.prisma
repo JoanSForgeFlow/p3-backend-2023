@@ -17,6 +17,7 @@ model Restaurant {
   cuisine  String
   tables   Table[]
   bookings  Booking[]
+  reviews  Review[]
 }
 
 model Table {
@@ -34,6 +35,7 @@ model Customer {
   email String  @unique
   phone  String
   bookings  Booking[]
+  reviews Review[]
 }
 
 model Booking {
@@ -47,4 +49,15 @@ model Booking {
   customer       Customer   @relation(fields: [customerId], references: [id])
   table          Table      @relation(fields: [tableId], references: [id])
   restaurant     Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
+model Review {
+  id           Int       @id @default(autoincrement())
+  customerId   Int
+  restaurantId Int
+  rating       Int
+  comment      String?
+  date         DateTime
+  customer     Customer  @relation(fields: [customerId], references: [id])
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 }

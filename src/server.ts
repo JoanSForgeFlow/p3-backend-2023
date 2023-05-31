@@ -6,6 +6,7 @@ import restaurantsRouter from "./restaurants.js";
 import tablesRouter from "./tables.js";
 import customersRouter from "./customers.js";
 import bookingRouter from "./bookings.js";
+import reviewRouter from "./reviews.js"
 import { defaultErrorHandler } from './utils.js';
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use("/restaurants", restaurantsRouter);
 app.use("/tables", tablesRouter);
 app.use("/customers", customersRouter);
 app.use("/bookings", bookingRouter);
+app.use("/reviews", reviewRouter);
 app.use(defaultErrorHandler);
 
 const { SERVER_PORT } = process.env;

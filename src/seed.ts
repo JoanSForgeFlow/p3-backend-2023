@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 import moment from 'moment';
 async function main() {
 await prisma.booking.deleteMany();
+await prisma.review.deleteMany();
 await prisma.customer.deleteMany();
 await prisma.table.deleteMany();
 await prisma.restaurant.deleteMany();
@@ -91,6 +92,28 @@ const b2 = await prisma.booking.create({
   },
 });
 console.log(`Created booking for customer ${c2.name} (${c2.id}) at restaurant ${r2.name} (${r2.id})`);
+
+const rev1 = await prisma.review.create({
+  data: {
+    customerId: c1.id,
+    restaurantId: r1.id,
+    rating: 5,
+    comment: "Excellent service and food!",
+    date: new Date(),
+  },
+});
+console.log(`Created review by customer ${c1.name} (${c1.id}) for restaurant ${r1.name} (${r1.id})`);
+
+const rev2 = await prisma.review.create({
+  data: {
+    customerId: c2.id,
+    restaurantId: r2.id,
+    rating: 4,
+    comment: "Great atmosphere and friendly staff!",
+    date: new Date(),
+  },
+});
+console.log(`Created review by customer ${c2.name} (${c2.id}) for restaurant ${r2.name} (${r2.id})`);
 }
 
 main()
