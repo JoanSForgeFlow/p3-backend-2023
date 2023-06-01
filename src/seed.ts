@@ -3,11 +3,6 @@ const prisma = new PrismaClient();
 import moment from 'moment';
 
 async function main() {
-  await prisma.booking.deleteMany();
-  await prisma.review.deleteMany();
-  await prisma.customer.deleteMany();
-  await prisma.table.deleteMany();
-  await prisma.restaurant.deleteMany();
 
   const restaurant1 = await prisma.restaurant.create({
     data: {
