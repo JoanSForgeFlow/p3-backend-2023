@@ -183,6 +183,98 @@ await prisma.review.create({
   },
 });
 
+// Creating a third restaurant
+const restaurant3 = await prisma.restaurant.create({
+  data: {
+    name: "La Paella Loca",
+    location: "Los Angeles",
+    cuisine: "Spanish",
+  },
+});
+
+// Creating tables for Restaurant 3
+const table5 = await prisma.table.create({
+  data: {
+    restaurantId: restaurant3.id,
+    number: 1,
+    capacity: 4,
+  },
+});
+
+const table6 = await prisma.table.create({
+  data: {
+    restaurantId: restaurant3.id,
+    number: 2,
+    capacity: 8,
+  },
+});
+
+const customer4 = await prisma.customer.create({
+  data: {
+    name: "Bob Williams",
+    email: "bobwilliams@example.com",
+    phone: "444-444-4444"
+  },
+});
+
+const customer5 = await prisma.customer.create({
+  data: {
+    name: "Mary Davis",
+    email: "marydavis@example.com",
+    phone: "333-333-3333"
+  },
+});
+
+// Booking and reviews for customer4
+const bookingDateTime4 = moment.utc(`2023-04-01T19:00:00.000Z`);
+const bookingEndDateTime4 = moment.utc(bookingDateTime4).add(2, 'hours');
+
+await prisma.booking.create({
+  data: {
+    customerId: customer4.id,
+    tableId: 5,
+    restaurantId: restaurant3.id,
+    bookingDate: bookingDateTime4.toDate(),
+    bookingEndTime: bookingEndDateTime4.toDate(),
+    numberOfPeople: 2,
+  },
+});
+
+await prisma.review.create({
+  data: {
+    customerId: customer4.id,
+    restaurantId: restaurant3.id,
+    rating: 5,
+    comment: "Absolutely loved the paella! Great Spanish wine selection too.",
+    date: new Date(),
+  },
+});
+
+// Booking and reviews for customer5
+const bookingDateTime5 = moment.utc(`2023-05-01T20:00:00.000Z`);
+const bookingEndDateTime5 = moment.utc(bookingDateTime5).add(2, 'hours');
+
+await prisma.booking.create({
+  data: {
+    customerId: customer5.id,
+    tableId: 6,
+    restaurantId: restaurant3.id,
+    bookingDate: bookingDateTime5.toDate(),
+    bookingEndTime: bookingEndDateTime5.toDate(),
+    numberOfPeople: 4,
+  },
+});
+
+await prisma.review.create({
+  data: {
+    customerId: customer5.id,
+    restaurantId: restaurant3.id,
+    rating: 4,
+    comment: "Great food, but the restaurant was a bit noisy.",
+    date: new Date(),
+  },
+});
+
 }
 
 main()
